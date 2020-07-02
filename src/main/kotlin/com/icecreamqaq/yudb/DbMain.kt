@@ -14,18 +14,15 @@ class DbMain : ApplicationService {
     private lateinit var yuContext: YuContext
 
     private lateinit var dbService: DbService
+    override fun width() = 3
 
     override fun init() {
         dbService = (yuContext.getBean(dbImpl,"") as DbService? ?: error("Can't Create DbImpl instance"))
         dbService.startup()
     }
 
-    override fun start() {
-        println("start")
-    }
+    override fun start() = Unit
 
-    override fun stop() {
-        dbService.shutdown()
-    }
+    override fun stop() = dbService.shutdown()
 
 }

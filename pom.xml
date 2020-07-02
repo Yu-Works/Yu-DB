@@ -25,6 +25,23 @@
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
     </properties>
 
+    <name>Yu-DB</name>
+    <description>Yu-DB is a simple Orm module.</description>
+    <url>https://github.com/Yu-Works/Yu-DB</url>
+
+    <scm>
+        <url>https://github.com/Yu-Works/Yu-DB</url>
+        <connection>scm:git:https://github.com/Yu-Works/Yu-DB</connection>
+        <developerConnection>scm:git@github.com:Yu-Works/Yu-DB.git</developerConnection>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>IceCream</name>
+            <email>www@withdata.net</email>
+        </developer>
+    </developers>
+
     <dependencies>
 
         <dependency>
