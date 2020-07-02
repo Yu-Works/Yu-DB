@@ -12,7 +12,6 @@ class HibernateTransactionImpl :HookRunnable {
 
     private val trans = ThreadLocal<Transaction>()
 
-
     override fun preRun(method: HookMethod?): Boolean {
         trans.set(context.getSession().beginTransaction())
         return false

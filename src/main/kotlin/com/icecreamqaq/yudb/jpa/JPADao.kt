@@ -4,6 +4,7 @@ import com.icecreamqaq.yudb.YuDao
 import java.io.Serializable
 import java.lang.reflect.ParameterizedType
 import javax.inject.Inject
+import javax.persistence.Id
 
 open class JPADao<T, PK : Serializable> : YuDao<T, PK> {
 
@@ -12,9 +13,23 @@ open class JPADao<T, PK : Serializable> : YuDao<T, PK> {
 
     var tClass: Class<T> = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>
 
-    val tName = tClass.simpleName
+    var tName = tClass.simpleName
     val ft = "from $tName"
     val cft = "select count(*) from $tName"
+
+    lateinit var id:String
+    val dft:String
+    init {
+        for (field in tClass.declaredFields) {
+            if (field.getAnnotation(Id::class.java)!=null){
+                id = field.name
+                break
+            }
+        }
+        dft = "delete $tName where $id=?"
+    }
+
+
 
 
     fun getEM() = jpaContext.getEM()
@@ -30,8 +45,8 @@ open class JPADao<T, PK : Serializable> : YuDao<T, PK> {
         else em.merge(entity)
     }
 
-    override fun delete(entity: T) {
-        getEM().remove(entity)
+    override fun delete(id: PK) {
+//        getEM().remove(entity)
     }
 
     override fun update(entity: T) {
