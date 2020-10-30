@@ -26,12 +26,21 @@ class Ts  {
 
     @Event
     fun start(e:AppStartEvent){
-        newSister()
+//        newSister()
+        getSister("123",1)
+    }
+
+    private fun getSister(s: String,id:Int) {
+        println(dao.findByName(s))
+        println(dao.findByNameAndId(s,id))
+        println(dao.findAll())
     }
 
     @Transactional
     fun newSister(){
-        dao.delete(11)
+        val sister = Sister()
+        sister.name = "789789798789"
+        dao.save(sister)
     }
 
 

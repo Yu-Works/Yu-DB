@@ -14,8 +14,8 @@ open class HibernateDao<T, PK : Serializable> : JPADao<T, PK>() {
     fun getSession() = hibernateContext.getSession()
 
 
-    override fun get(id: PK): T {
-        return getSession().get(tClass, id) as T
+    override fun get(id: PK): T? {
+        return getSession().get(tClass, id)
     }
 
     override fun save(entity: T) {
@@ -52,11 +52,15 @@ open class HibernateDao<T, PK : Serializable> : JPADao<T, PK>() {
         return query.list() as List<T>
     }
 
-    fun search(hql: String, vararg para: Any): T? {
-        return query(hql,*para).uniqueResult() as T?
+    fun search(hql: String, vararg para: Any): T {
+        return query(hql,*para).uniqueResult() as T
     }
 
     fun execute(hql: String, vararg para: Any): Int {
         return query(hql,*para).executeUpdate()
+    }
+
+    override fun where(paras: Map<String, Any>, page: Page?) {
+        TODO("Not yet implemented")
     }
 }

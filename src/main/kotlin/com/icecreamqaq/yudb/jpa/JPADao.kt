@@ -1,6 +1,7 @@
 package com.icecreamqaq.yudb.jpa
 
 import com.icecreamqaq.yudb.YuDao
+import com.icecreamqaq.yudb.entity.Page
 import java.io.Serializable
 import java.lang.reflect.ParameterizedType
 import javax.inject.Inject
@@ -35,7 +36,7 @@ open class JPADao<T, PK : Serializable> : YuDao<T, PK> {
     fun getEM() = jpaContext.getEM()
 
 
-    override fun get(id: PK): T {
+    override fun get(id: PK): T? {
         return getEM().find(tClass, id)
     }
 
@@ -55,5 +56,9 @@ open class JPADao<T, PK : Serializable> : YuDao<T, PK> {
 
     override fun saveOrUpdate(entity: T) {
         save(entity)
+    }
+
+    override fun where(paras: Map<String, Any>, page: Page?) {
+        TODO("Not yet implemented")
     }
 }

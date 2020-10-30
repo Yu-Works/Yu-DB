@@ -6,7 +6,7 @@
 
     <groupId>com.IceCreamQAQ.Yu</groupId>
     <artifactId>Yu-DB</artifactId>
-    <version>0.0.1.0</version>
+    <version>0.0.2.0-DEV2</version>
 
     <parent>
         <groupId>com.IceCreamQAQ</groupId>
@@ -15,12 +15,12 @@
     </parent>
 
     <properties>
-        <kotlin.version>1.3.72</kotlin.version>
+        <kotlin.version>1.4.10</kotlin.version>
 
-        <Yu-Core.version>0.1.1.1</Yu-Core.version>
+        <Yu-Core.version>0.2.0.0-DEV1</Yu-Core.version>
         <HikariCP.version>3.4.1</HikariCP.version>
         <hibernate.version>5.1.16.Final</hibernate.version>
-        <mysqlVersion>8.0.19</mysqlVersion>
+        <h2.Version>1.4.200</h2.Version>
 
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
     </properties>
@@ -75,9 +75,9 @@
         </dependency>
 
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysqlVersion}</version>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.Version}</version>
         </dependency>
 
     </dependencies>
