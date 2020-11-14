@@ -1,10 +1,12 @@
 package com.icecreamqaq.test.db.entity
 
+import com.icecreamqaq.yudb.annotation.DB
 import javax.persistence.*
 
+@DB("bb")
 @Entity
-@Table(name = "sister")
-open class Sister {
+@Table(name = "brother")
+open class Brother {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +22,7 @@ open class Sister {
     open var display: String? = null
 
     override fun toString(): String {
-        return "Sister(id = $id, name = $name, pass = $pass, display = $display)"
+        return "Brother(id = $id, name = $name, pass = $pass, display = $display)"
     }
 
 }

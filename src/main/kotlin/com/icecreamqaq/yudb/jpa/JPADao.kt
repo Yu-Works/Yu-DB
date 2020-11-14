@@ -2,63 +2,25 @@ package com.icecreamqaq.yudb.jpa
 
 import com.icecreamqaq.yudb.YuDao
 import com.icecreamqaq.yudb.entity.Page
+import com.icecreamqaq.yudb.jpa.annotation.Dao
+import org.hibernate.Query
 import java.io.Serializable
-import java.lang.reflect.ParameterizedType
-import javax.inject.Inject
-import javax.persistence.Id
+import javax.persistence.EntityManager
 
-open class JPADao<T, PK : Serializable> : YuDao<T, PK> {
+@Dao
+interface JPADao<T, PK : Serializable> : YuDao<T, PK> {
 
-    @Inject
-    lateinit var jpaContext: JPAContext
+    fun getEM(): EntityManager
 
-    var tClass: Class<T> = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>
+    fun query(hql: String, vararg para: Any): Query<T>
 
-    var tName = tClass.simpleName
-    val ft = "from $tName"
-    val cft = "select count(*) from $tName"
+    fun searchList(hql: String, vararg para: Any): List<T>
+    fun searchList(hql: String, page: Page?, vararg para: Any): List<T>
+    fun findAll() : List<T>
+    fun findAll(page: Page?): List<T>
 
-    lateinit var id:String
-    val dft:String
-    init {
-        for (field in tClass.declaredFields) {
-            if (field.getAnnotation(Id::class.java)!=null){
-                id = field.name
-                break
-            }
-        }
-        dft = "delete $tName where $id=?"
-    }
+    fun search(hql: String, vararg para: Any): T
 
+    fun execute(hql: String, vararg para: Any): Int
 
-
-
-    fun getEM() = jpaContext.getEM()
-
-
-    override fun get(id: PK): T? {
-        return getEM().find(tClass, id)
-    }
-
-    override fun save(entity: T) {
-        val em = getEM()
-        if (!em.contains(entity)) em.persist(entity)
-        else em.merge(entity)
-    }
-
-    override fun delete(id: PK) {
-//        getEM().remove(entity)
-    }
-
-    override fun update(entity: T) {
-        getEM().merge(entity)
-    }
-
-    override fun saveOrUpdate(entity: T) {
-        save(entity)
-    }
-
-    override fun where(paras: Map<String, Any>, page: Page?) {
-        TODO("Not yet implemented")
-    }
 }

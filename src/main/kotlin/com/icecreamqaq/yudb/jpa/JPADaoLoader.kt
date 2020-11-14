@@ -18,7 +18,9 @@ class JPADaoLoader : Loader {
 
     override fun load(items: Map<String, LoadItem>) {
         for (value in items.values) {
+            if (!value.type.isInterface)continue
             if (value.type == Dao::class.java) continue
+            if (value.type == JPADao::class.java) continue
             val impl = spawner.spawnDaoImpl(value.type as Class<YuDao<*, *>>)
             val implInstance = context.newBean(impl!!)!!
             context.putBean(value.type, "", implInstance)

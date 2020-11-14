@@ -11,8 +11,10 @@ import javax.inject.Inject
 import javax.persistence.Entity
 import javax.persistence.Table
 import kotlin.reflect.KCallable
+import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.starProjectedType
+import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.javaType
 
 class Spawner {
@@ -28,7 +30,8 @@ class Spawner {
     data class SelectImpl(val hql: String, val nativeQuery: Boolean = false)
 
     fun spawnDaoImpl(dao: Class<out YuDao<*, *>>): Class<*>? {
-        val kDao = dao.kotlin
+
+        val isKotlinClass = dao.getAnnotation(Metadata::class.java) != null
 
         val entityClass = (dao.genericInterfaces[0] as ParameterizedType).actualTypeArguments[0] as Class<*>
         val pkClass = (dao.genericInterfaces[0] as ParameterizedType).actualTypeArguments[1] as Class<*>
@@ -36,6 +39,18 @@ class Spawner {
         val implName = "${dao.simpleName}Impl"
         val implClassStringBuilder = StringBuilder("package impl.icecreamqaq.yudb.jpa.dao.spawnImpl;\n\nimport com.icecreamqaq.yudb.jpa.hibernate.HibernateDao;\nimport com.icecreamqaq.yudb.entity.Page;\n\n")
         implClassStringBuilder.append("public class $implName extends HibernateDao<${entityClass.name}, ${pkClass.name}> implements ${dao.name} {\n\n")
+
+
+//        if (isKotlinClass){
+        val kDao = dao.kotlin
+
+        fun <T> List<T>.first() = if (isEmpty()) null else this[0]
+
+        val innerImpl = dao.declaredClasses.filter { it.name == "DefaultImpls" }.first() ?: try {
+            Class.forName("${dao.name}\$DefaultImpls")
+        } catch (e: ClassNotFoundException) {
+            null
+        }
 
         fun KCallable<*>.makeSelectMethod(select: SelectImpl): String {
             val page = this.parameters.last().type.javaType.typeName == Page::class.java.name
@@ -86,7 +101,7 @@ class Spawner {
             if (this.parameters.size == 1) {
                 ps = ""
                 qs = ""
-            }else {
+            } else {
                 val psb = StringBuilder()
                 val qsb = StringBuilder()
 
@@ -124,21 +139,23 @@ class Spawner {
 
             var blinkLoop = 0
 
+            var ci = 0
+
             fun end() {
                 hb.append(pName.toLowerCaseFirstOne()).append(" ").append(
                         when (pOp) {
-                            "Is", "Equal" -> "= ?"
-                            "LessThan" -> "< ?"
-                            "LessThanEqual" -> "<= ?"
-                            "GreaterThan" -> "> ?"
-                            "GreaterThanEqual" -> ">= ?"
+                            "Is", "Equal" -> "= ?${ci++}"
+                            "LessThan" -> "< ?${ci++}"
+                            "LessThanEqual" -> "<= ?${ci++}"
+                            "GreaterThan" -> "> ?${ci++}"
+                            "GreaterThanEqual" -> ">= ?${ci++}"
                             "IsNull" -> "is null"
                             "IsNotNull", "NotNull" -> "is not null"
-                            "Like" -> "like ?"
-                            "NotLike" -> "not like ?"
-                            "StartingWith" -> "like ?(parameter bound with appended %)"
-                            "EndingWith" -> "like ?(parameter bound with prepended %)"
-                            "Containing" -> "like ?(parameter bound wrapped in %)"
+                            "Like" -> "like ?${ci++}"
+                            "NotLike" -> "not like ?${ci++}"
+                            "StartingWith" -> "like ?${ci++}(parameter bound with appended %)"
+                            "EndingWith" -> "like ?${ci++}(parameter bound with prepended %)"
+                            "Containing" -> "like ?${ci++}(parameter bound wrapped in %)"
                             else -> "= ?"
                         }
                 ).append(" ").append(next).append(" ")
@@ -194,8 +211,56 @@ class Spawner {
         }
 
 
+
         for (c in kDao.members) {
+            if (c !is KFunction) continue
             if (c.isBaseMethod) continue
+
+            if (c.javaMethod?.isDefault == true) continue
+
+            innerImpl?.let {
+                val pcl = arrayOfNulls<Class<*>>(c.parameters.size)
+                for (p in c.parameters) {
+                    pcl[p.index] = p.type.javaType.toClass()
+                }
+                try {
+                    val im = it.getMethod(c.name, *pcl)
+                    val returnType = c.returnType.javaType.toClass()
+
+                    val ps: String
+                    val qs: String
+
+                    if (c.parameters.size == 1) {
+                        ps = ""
+                        qs = ""
+                    } else {
+                        val psb = StringBuilder()
+                        val qsb = StringBuilder()
+
+                        for (i in 1 until c.parameters.size) {
+                            with(c.parameters[i]) {
+                                psb.append(type.javaType.toClass().name).append(" ").append(name
+                                        ?: "arg$index").append(",")
+                                qsb.append(", ").append(name ?: "arg$index")
+                            }
+                        }
+
+                        ps = {
+                            val s = psb.toString()
+                            s.substring(0, s.length - 1)
+                        }()
+                        qs = qsb.toString()
+                    }
+
+                    implClassStringBuilder.append("""
+                        @Override
+                        public ${returnType.name} ${c.name}($ps) {
+                            ${innerImpl.name.replace("\$", ".")}.${im.name}(this $qs);
+                        }
+                    """.trimIndent())
+                } catch (e: Exception) {
+                }
+            }
 
             c.findAnnotation<Select>()?.let { implClassStringBuilder.append(c.makeSelectMethod(SelectImpl(it.value, it.nativeQuery))) }
 
@@ -212,6 +277,12 @@ class Spawner {
         val implClassString = implClassStringBuilder.toString()
 
         return daoCompiler.doCompile("impl.icecreamqaq.yudb.jpa.dao.spawnImpl.$implName", implClassString)
+//        }
+//        for (method in dao.methods) {
+//            method.isDefault
+//        }
+//
+//        TODO()
     }
 
 

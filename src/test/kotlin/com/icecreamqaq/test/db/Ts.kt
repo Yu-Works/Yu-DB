@@ -1,46 +1,66 @@
 package com.icecreamqaq.test.db
 
-import com.IceCreamQAQ.Yu.`as`.ApplicationService
 import com.IceCreamQAQ.Yu.annotation.Event
 import com.IceCreamQAQ.Yu.annotation.EventListener
 import com.IceCreamQAQ.Yu.di.YuContext
 import com.IceCreamQAQ.Yu.event.events.AppStartEvent
+import com.icecreamqaq.test.db.dao.BrotherDao
 import com.icecreamqaq.test.db.dao.SisterDao
+import com.icecreamqaq.test.db.entity.Brother
 import com.icecreamqaq.test.db.entity.Sister
 import com.icecreamqaq.yudb.jpa.JPAContext
 import com.icecreamqaq.yudb.jpa.annotation.Transactional
-import java.lang.RuntimeException
 import javax.inject.Inject
 
 @EventListener
-class Ts  {
+class Ts {
 
     @Inject
-    private lateinit var context:YuContext
+    private lateinit var context: YuContext
 
     @Inject
     private lateinit var jpaContext: JPAContext
 
     @Inject
-    private lateinit var dao:SisterDao
+    private lateinit var dao: SisterDao
+
+    @Inject
+    private lateinit var brotherDao: BrotherDao
 
     @Event
-    fun start(e:AppStartEvent){
+    fun start(e: AppStartEvent) {
 //        newSister()
-        getSister("123",1)
+//        newBrother()
+        getSister("123", 1)
+        getBrother("b1b1", 1)
     }
 
-    private fun getSister(s: String,id:Int) {
+    private fun getBrother(s: String, id: Int) {
+        brotherDao.aaa()
+        println(brotherDao.findByName(s))
+        println(brotherDao.findByNameAndId(s, id))
+        println(brotherDao.findAll())
+    }
+
+    private fun getSister(s: String, id: Int) {
+        dao.aaa()
         println(dao.findByName(s))
-        println(dao.findByNameAndId(s,id))
+        println(dao.findByNameAndId(s, id))
         println(dao.findAll())
     }
 
     @Transactional
-    fun newSister(){
+    fun newSister() {
         val sister = Sister()
         sister.name = "789789798789"
         dao.save(sister)
+    }
+
+    @Transactional(dbList = ["bb"])
+    fun newBrother() {
+        val brother = Brother()
+        brother.name = "b2b2"
+        brotherDao.save(brother)
     }
 
 

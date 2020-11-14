@@ -6,10 +6,10 @@ import com.icecreamqaq.yudb.jpa.JPADaoLoader
 
 
 @HookBy("com.icecreamqaq.yudb.jpa.hibernate.HibernateTransactionImpl")
-annotation class Transactional
+annotation class Transactional(val dbList:Array<String> = ["default"])
 
-@LoadBy(JPADaoLoader::class)
+@LoadBy(JPADaoLoader::class, mastBean = false)
 annotation class Dao
 
 annotation class Select(val value: String, val nativeQuery: Boolean = false)
-annotation class Execute(val value:String, val nativeQuery:Boolean = false)
+annotation class Execute(val value: String, val nativeQuery: Boolean = false)

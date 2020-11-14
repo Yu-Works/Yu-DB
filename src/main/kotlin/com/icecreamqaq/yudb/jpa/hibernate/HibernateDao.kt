@@ -1,17 +1,17 @@
 package com.icecreamqaq.yudb.jpa.hibernate
 
 import com.icecreamqaq.yudb.entity.Page
-import com.icecreamqaq.yudb.jpa.JPADao
+import com.icecreamqaq.yudb.jpa.JPADaoBase
 import org.hibernate.Query
 import java.io.Serializable
 import javax.inject.Inject
 
-open class HibernateDao<T, PK : Serializable> : JPADao<T, PK>() {
+open class HibernateDao<T, PK : Serializable> : JPADaoBase<T, PK>() {
 
     @Inject
     lateinit var hibernateContext: HibernateContext
 
-    fun getSession() = hibernateContext.getSession()
+    fun getSession() = hibernateContext.getSession(tdb)
 
 
     override fun get(id: PK): T? {
@@ -34,17 +34,16 @@ open class HibernateDao<T, PK : Serializable> : JPADao<T, PK>() {
         getSession().saveOrUpdate(entity)
     }
 
-    fun query(hql: String, vararg para: Any): Query{
-        val query = getSession().createQuery(hql)?: error("Create Query Error!")
+    override fun query(hql: String, vararg para: Any): Query<T> {
+        val query = getSession().createQuery(hql) ?: error("Create Query Error!")
         for ((i, v) in para.withIndex()) {
             query.setParameter(i, v)
         }
-        return query
+        return query as Query<T>
     }
 
-    @JvmOverloads
-    fun searchList(hql: String, page: Page? = null, vararg para: Any): List<T> {
-        val query = query(hql,*para)
+    override fun searchList(hql: String, page: Page?, vararg para: Any): List<T> {
+        val query = query(hql, *para)
         if (page != null) {
             query.firstResult = (page.id - 1) * page.size
             query.maxResults = page.size
@@ -52,15 +51,17 @@ open class HibernateDao<T, PK : Serializable> : JPADao<T, PK>() {
         return query.list() as List<T>
     }
 
-    fun search(hql: String, vararg para: Any): T {
-        return query(hql,*para).uniqueResult() as T
+    override fun search(hql: String, vararg para: Any): T {
+        return query(hql, *para).uniqueResult() as T
     }
 
-    fun execute(hql: String, vararg para: Any): Int {
-        return query(hql,*para).executeUpdate()
+    override fun execute(hql: String, vararg para: Any): Int {
+        return query(hql, *para).executeUpdate()
     }
 
     override fun where(paras: Map<String, Any>, page: Page?) {
         TODO("Not yet implemented")
     }
+
+    override fun findAll(page: Page?) = searchList(ft, page)
 }
