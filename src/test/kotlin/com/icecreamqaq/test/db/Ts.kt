@@ -30,7 +30,7 @@ class Ts {
     @Event
     fun start(e: AppStartEvent) {
 //        newSister()
-//        newBrother()
+        newBrother()
         getSister("123", 1)
         getBrother("b1b1", 1)
     }
@@ -52,14 +52,15 @@ class Ts {
     @Transactional
     fun newSister() {
         val sister = Sister()
-        sister.name = "789789798789"
+        sister.name = "q1q1"
         dao.save(sister)
     }
 
-    @Transactional(dbList = ["bb"])
+    @Transactional(dbList = ["bb", "default"])
     fun newBrother() {
+        newSister()
         val brother = Brother()
-        brother.name = "b2b2"
+        brother.name = "b3b3"
         brotherDao.save(brother)
     }
 

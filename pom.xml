@@ -6,7 +6,7 @@
 
     <groupId>com.IceCreamQAQ.Yu</groupId>
     <artifactId>Yu-DB</artifactId>
-    <version>0.0.2.0-DEV5</version>
+    <version>0.0.2.0-DEV7</version>
 
     <parent>
         <groupId>com.IceCreamQAQ</groupId>
