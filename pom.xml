@@ -20,7 +20,7 @@
         <Yu-Core.version>0.2.0.0-DEV3</Yu-Core.version>
         <HikariCP.version>3.4.1</HikariCP.version>
         <hibernate.version>5.4.23.Final</hibernate.version>
-        <h2.Version>1.4.200</h2.Version>
+        <h2.Version>2.0.206</h2.Version>
 
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
     </properties>
