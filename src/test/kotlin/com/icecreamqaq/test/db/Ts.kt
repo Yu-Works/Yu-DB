@@ -2,66 +2,73 @@ package com.icecreamqaq.test.db
 
 import com.IceCreamQAQ.Yu.annotation.Event
 import com.IceCreamQAQ.Yu.annotation.EventListener
-import com.IceCreamQAQ.Yu.di.YuContext
 import com.IceCreamQAQ.Yu.event.events.AppStartEvent
-import com.icecreamqaq.test.db.dao.BrotherDao
-import com.icecreamqaq.test.db.dao.SisterDao
-import com.icecreamqaq.test.db.entity.Brother
-import com.icecreamqaq.test.db.entity.Sister
-import com.icecreamqaq.yudb.jpa.JPAContext
+import com.icecreamqaq.test.db.entity.*
 import com.icecreamqaq.yudb.jpa.annotation.Transactional
+import org.hibernate.collection.internal.PersistentBag
 import javax.inject.Inject
 
 @EventListener
 class Ts {
 
     @Inject
-    private lateinit var context: YuContext
+    private lateinit var cardDao: FCardDao
 
     @Inject
-    private lateinit var jpaContext: JPAContext
+    private lateinit var skillDao: SkillDao
 
     @Inject
-    private lateinit var dao: SisterDao
-
-    @Inject
-    private lateinit var brotherDao: BrotherDao
+//    private lateinit var sisterDao
 
     @Event
     fun start(e: AppStartEvent) {
 //        newSister()
-        newBrother()
-        getSister("123", 1)
-        getBrother("b1b1", 1)
-    }
-
-    private fun getBrother(s: String, id: Int) {
-        brotherDao.aaa()
-        println(brotherDao.findByName(s))
-        println(brotherDao.findByNameAndId(s, id))
-        println(brotherDao.findAll())
-    }
-
-    private fun getSister(s: String, id: Int) {
-        dao.aaa()
-        println(dao.findByName(s))
-        println(dao.findByNameAndId(s, id))
-        println(dao.findAll())
+//        val card = ss()
+        scc()
+        scc()
+        scc()
     }
 
     @Transactional
-    fun newSister() {
-        val sister = Sister()
-        sister.name = "q1q1"
-        dao.save(sister)
+    fun tcs() {
+        val card = Card(cardName = "test01")
+        cardDao.save(card)
+        val skill = Skill(skillName = "skill01")
+        card.skillList = arrayListOf(skill)
+        cardDao.update(card)
     }
 
-    @Transactional(dbList = ["bb", "default"])
-    fun newBrother() {
-        newSister()
-        val brother = Brother()
-        brother.name = "b3b3"
-        brotherDao.save(brother)
+    @Transactional
+    fun tc(){
+        val card = Card(cardName = "test02")
+        cardDao.save(card)
+    }
+
+    @Transactional
+    fun sc() = cardDao.findByCardName("test02")
+
+    @Transactional
+    fun ssc(){
+        println(cardDao.findByCardName("test02")!!.skillList)
+    }
+
+    @Transactional
+    fun scc(){
+        println(cardDao.findByCardName("test01"))
+        println(cardDao.findByCardName("test01"))
+        println(cardDao.findByCardName("test01"))
+    }
+
+    @Transactional
+    fun ss(): Card {
+        val card = cardDao.findByCardName("test01")!!
+
+//        println(card.skillList)
+//        PersistentBag
+//        card.skillList!!.add(Skill(skillName = "spx"))
+        val skill = skillDao.findByCard(card)
+        println(skill)
+        return card
     }
 
 

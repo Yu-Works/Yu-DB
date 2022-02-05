@@ -2,15 +2,16 @@ package com.icecreamqaq.yudb.jpa.hibernate
 
 import com.IceCreamQAQ.Yu.annotation.Config
 import com.IceCreamQAQ.Yu.di.YuContext
+import com.IceCreamQAQ.Yu.hook.HookItem
+import com.IceCreamQAQ.Yu.hook.YuHook
 import com.alibaba.fastjson.JSONObject
-import com.icecreamqaq.yudb.jpa.DataSourceInfo
-import com.icecreamqaq.yudb.jpa.JPAContext
-import com.icecreamqaq.yudb.jpa.JPAService
-import com.icecreamqaq.yudb.jpa.PersistenceUnitInfoImpl
+import com.icecreamqaq.yudb.jpa.*
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import org.hibernate.cfg.AvailableSettings
 import org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl
 import org.hibernate.jpa.boot.internal.PersistenceUnitInfoDescriptor
+import java.io.File
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
@@ -29,7 +30,12 @@ class HibernateImpl : JPAService() {
     @Config("db")
     lateinit var db: JSONObject
 
+    private val isDev = File("pom.xml").exists() || File("build.gradle").exists() || File("build.gradle.kts").exists()
+
+
     override fun init(): JPAContext {
+//        YuHook.put(HookItem("org.hibernate.Version", "initVersion", "com.icecreamqaq.yudb.HibernateVersionHook"))
+
         db.remove("impl")
         if (db.containsKey("url")) {
             val default = JSONObject()
@@ -48,12 +54,25 @@ class HibernateImpl : JPAService() {
 
             default["dialect"] = db.getString("dialect")
             db.remove("dialect")
+
+            default["ddl"] = db.getString("ddl")
+            db.remove("ddl")
+
+            default["defaultCache"] = db.getString("defaultCache")
+            db.remove("defaultCache")
+
+            default["supportCache"] = db.getString("supportCache")
+            db.remove("supportCache")
+
         }
 
         val emfMap = HashMap<String, EntityManagerFactory>(db.size)
+        val dataSourceMap = DataSourceMap()
         for (d in db.keys) {
             try {
                 db.getObject(d, DataSourceInfo::class.java)?.run {
+//                    context.putBean(DataSourceInfo::class.java,d,this)
+                    dataSourceMap[d] = this
                     val hc = HikariConfig()
 
                     hc.transactionIsolation = "TRANSACTION_READ_COMMITTED"
@@ -76,25 +95,42 @@ class HibernateImpl : JPAService() {
                     prop["hibernate.dialect"] = dialect
                     prop["username"] = username
                     prop["javax.persistence.provider"] = "org.hibernate.ejb.HibernatePersistence"
-                    prop["hibernate.ejb.loaded.classes"] = entities[d] ?: error("DataSource $d Not Found Any DataBase Entity!")
-                    prop["hibernate.hbm2ddl.auto"] = "update"
+                    prop["hibernate.ejb.loaded.classes"] =
+                        entities[d] ?: error("DataSource $d Not Found Any DataBase Entity!")
+                    prop["hibernate.hbm2ddl.auto"] = ddl ?: if (isDev) "update" else "validate"
+                    prop["hibernate.classLoaders"] = arrayListOf(appClassLoader)
+                    prop["hibernate.enable_lazy_load_no_trans"] = true
                     prop["password"] = password
                     prop["driver"] = driver
 
+                    if(supportCache){
+                        prop["hibernate.cache.use_second_level_cache"] = true
+                        prop["hibernate.cache.use_query_cache"] = true
+                        prop["hibernate.cache.region.factory_class"] = "org.hibernate.cache.ehcache.internal.EhcacheRegionFactory"
+                    }
+
+//                    prop["hibernate.cache.provider_configuration_file_resource_path"] = "ehcache_test_test_test.xml"
+
+
+
 
                     val persistenceUnitInfo = PersistenceUnitInfoImpl(
-                            persistenceProviderClass = "org.hibernate.jpa.HibernatePersistenceProvider",
-                            persistenceUnitName = "default",
-                            managedClasses = entities[d] ?: error("DataSource $d Not Found Any DataBase Entity!"),
-                            mappingFileNames = arrayListOf(),
-                            properties = prop,
-                            classLoader = this::class.java.classLoader,
-                            nonJtaDataSource = ds
+                        persistenceProviderClass = "org.hibernate.jpa.HibernatePersistenceProvider",
+                        persistenceUnitName = "default",
+                        managedClasses = entities[d] ?: error("DataSource $d Not Found Any DataBase Entity!"),
+                        mappingFileNames = arrayListOf(),
+                        properties = prop,
+                        classLoader = this::class.java.classLoader,
+                        nonJtaDataSource = ds
                     )
 
                     val emf = EntityManagerFactoryBuilderImpl(
-                            PersistenceUnitInfoDescriptor(persistenceUnitInfo), HashMap<String, Any>()
+                        PersistenceUnitInfoDescriptor(persistenceUnitInfo),
+                        HashMap<String, Any>(),
+//                        appClassLoader,
                     ).build()
+
+//                    emf.addNamedEntityGraph()
                     emfMap.put(d, emf)
                 }
             } catch (e: Exception) {
@@ -104,6 +140,7 @@ class HibernateImpl : JPAService() {
 
         val hibernateContext = HibernateContext(emfMap)
         context.putBean(hibernateContext)
+        context.putBean(dataSourceMap)
         return hibernateContext
 
     }

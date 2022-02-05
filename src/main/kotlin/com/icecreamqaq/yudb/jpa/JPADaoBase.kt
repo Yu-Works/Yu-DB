@@ -30,7 +30,7 @@ abstract class JPADaoBase<T, PK : Serializable> : JPADao<T, PK> {
                 break
             }
         }
-        dft = "delete $tName where $id=?"
+        dft = "delete $tName where $id=?0"
     }
 
 

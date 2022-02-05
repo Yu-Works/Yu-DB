@@ -10,13 +10,12 @@ import java.util.List;
 
 public interface BrotherDao extends JPADao<Brother,Integer> {
 
-    default void aaa(){
-        System.out.println("This is Java fun aaa!(BrotherDao)");
-    }
+//    default void aaa(){
+//        execute("")
+//    }
 
-    @NotNull
-    List<Brother> findByName(@NotNull String s);
+    List<Brother> findByName(String name);
 
-    @Nullable
-    Brother findByNameAndId(@NotNull String s, int id);
+
+    Brother findByNameAndId(String name, int id);
 }

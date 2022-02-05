@@ -1,9 +1,21 @@
 package com.icecreamqaq.yudb.jpa
 
+class DataSourceMap {
+    val map = hashMapOf<String, DataSourceInfo>()
+
+    operator fun get(key: String) = map[key]
+    operator fun set(key: String, value: DataSourceInfo) {
+        map[key] = value
+    }
+}
+
 data class DataSourceInfo(
-        val url: String,
-        val username: String,
-        val password: String,
-        val driver: String,
-        val dialect: String
+    var url: String = "",
+    var username: String = "",
+    var password: String = "",
+    var driver: String = "",
+    var dialect: String = "",
+    var ddl: String? = null,
+    var defaultCache: Boolean = false,
+    var supportCache: Boolean = false
 )

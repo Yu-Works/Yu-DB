@@ -3,6 +3,7 @@ package com.icecreamqaq.test.db.entity
 import javax.persistence.*
 
 @Entity
+@Cacheable
 @Table(name = "sister")
 open class Sister {
 

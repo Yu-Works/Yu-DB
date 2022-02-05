@@ -1,5 +1,6 @@
 package com.icecreamqaq.yudb.jpa.hibernate
 
+import com.IceCreamQAQ.Yu.hook.HookInfo
 import com.IceCreamQAQ.Yu.hook.HookMethod
 import com.IceCreamQAQ.Yu.hook.HookRunnable
 import com.icecreamqaq.yudb.jpa.annotation.Transactional
@@ -9,10 +10,11 @@ import javax.inject.Inject
 
 class HibernateTransactionImpl : HookRunnable {
 
-    data class YuTran(val methodFullName: String, val transaction: Transaction)
+    data class YuTran(val methodHash: Int, val transaction: Transaction)
 
     @Inject
     private lateinit var context: HibernateContext
+
 
     @Inject
     fun init() {
@@ -24,34 +26,31 @@ class HibernateTransactionImpl : HookRunnable {
 
     private val transactionMethodMap = ConcurrentHashMap<String, Array<String>>()
     private lateinit var trans: HashMap<String, ThreadLocal<YuTran>>
+    override fun init(info: HookInfo) {
+        val dbList = info.method.getAnnotation(Transactional::class.java)?.dbList ?: arrayOf("default")
+        info.saveInfo("YuDB.dbList", dbList)
+    }
 
     override fun preRun(method: HookMethod): Boolean {
-        val methodFullName = "${method.className}.${method.methodName}"
-        val dbList = transactionMethodMap.getOrPut(methodFullName) {
-            Class.forName(method.className).methods.first { it.name == method.methodName }.run {
-                getAnnotation(Transactional::class.java)?.dbList ?: arrayOf("default")
-            }
-        }
+        val dbList = method.info.getInfo("YuDB.dbList") as Array<String>
         for (db in dbList) {
             val trans = trans[db] ?: error("Can't find DataSource: $db")
             val yut = trans.get()
-            if (yut != null) if (yut.methodFullName == methodFullName) error("This Thread In A Transaction! Can't Open A New Transaction!") else return false
+            if (yut != null) if (yut.methodHash == method.info.method.hashCode()) error("This Thread In A Transaction! Can't Open A New Transaction!") else return false
 
             val tran = context.getSession(db).beginTransaction()
-            trans.set(YuTran(methodFullName, tran))
+            trans.set(YuTran(method.info.method.hashCode(), tran))
         }
 
         return false
     }
 
     override fun postRun(method: HookMethod) {
-        val methodFullName = "${method.className}.${method.methodName}"
-        val dbList = transactionMethodMap[methodFullName]
-                ?: error("Can't find MethodInfo: $methodFullName")
+        val dbList = method.info.getInfo("YuDB.dbList") as Array<String>
         for (db in dbList) {
             val trans = trans[db] ?: error("Can't find DataSource: $db")
             val yut = trans.get()
-            if (yut.methodFullName != methodFullName) return
+            if (yut.methodHash != method.info.method.hashCode()) return
             yut.transaction.commit()
             context.getSession(db).close()
             trans.remove()
@@ -59,14 +58,12 @@ class HibernateTransactionImpl : HookRunnable {
     }
 
     override fun onError(method: HookMethod): Boolean {
-        val methodFullName = "${method.className}.${method.methodName}"
-        val dbList = transactionMethodMap[methodFullName]
-                ?: error("Can't find MethodInfo: $methodFullName")
+        val dbList = method.info.getInfo("YuDB.dbList") as Array<String>
         for (db in dbList) {
             val trans = trans[db] ?: error("Can't find DataSource: $db")
             val yut = trans.get()
-            if (yut.methodFullName != methodFullName) return false
-            yut.transaction.commit()
+            if (yut.methodHash != method.info.method.hashCode()) return false
+            yut.transaction.rollback()
             context.getSession(db).close()
             trans.remove()
         }
