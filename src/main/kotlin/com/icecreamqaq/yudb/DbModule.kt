@@ -13,7 +13,7 @@ class DbModule : Module {
 }
 
 class HibernateVersionHook : HookRunnable {
-    override fun init(info: HookInfo?) {
+    override fun init(info: HookInfo) {
     }
 
     override fun preRun(method: HookMethod): Boolean {
@@ -21,11 +21,11 @@ class HibernateVersionHook : HookRunnable {
         return true
     }
 
-    override fun postRun(method: HookMethod?) {
+    override fun postRun(method: HookMethod) {
 
     }
 
-    override fun onError(method: HookMethod?): Boolean {
+    override fun onError(method: HookMethod): Boolean {
         return false
     }
 }

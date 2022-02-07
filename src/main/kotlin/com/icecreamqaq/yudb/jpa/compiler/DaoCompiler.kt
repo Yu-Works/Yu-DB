@@ -1,6 +1,7 @@
 package com.icecreamqaq.yudb.jpa.compiler
 
 import com.IceCreamQAQ.Yu.loader.AppClassloader
+import com.IceCreamQAQ.Yu.loader.SpawnClassLoader
 import org.eclipse.jdt.internal.compiler.CompilationResult
 import org.eclipse.jdt.internal.compiler.Compiler
 import org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies
@@ -20,9 +21,7 @@ import javax.inject.Named
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 
-class DaoCompiler @Inject constructor(@Named("appClassLoader") val classloader: ClassLoader) {
-
-    val appClassloader = classloader as AppClassloader
+class DaoCompiler @Inject constructor(@Named("appClassLoader") val classloader: SpawnClassLoader) {
 
 //    data class CB(val clazz:Class<*>)
 
@@ -141,7 +140,7 @@ class DaoCompiler @Inject constructor(@Named("appClassLoader") val classloader: 
             for (c in it.classFiles) {
 
 //                this::class.java.classLoader.loadClass()
-                val cc = this.appClassloader.define(className, c.bytes)
+                val cc = this.classloader.define(className, c.bytes)
                 log.trace("Compiler: ${cc.name}")
             }
         },

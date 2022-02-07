@@ -15,9 +15,9 @@
     </parent>
 
     <properties>
-        <kotlin.version>1.4.10</kotlin.version>
+        <kotlin.version>1.6.10</kotlin.version>
 
-        <Yu-Core.version>0.2.0.0-DEV12</Yu-Core.version>
+        <Yu-Core.version>0.2.0.0-DEV17</Yu-Core.version>
         <HikariCP.version>3.4.1</HikariCP.version>
         <hibernate.version>5.4.23.Final</hibernate.version>
         <h2.Version>1.4.200</h2.Version>
