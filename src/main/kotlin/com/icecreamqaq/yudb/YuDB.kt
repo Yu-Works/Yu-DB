@@ -20,7 +20,7 @@ class YuDB {
 
         @JvmStatic
         fun start() =
-            if (instance_ != null) instance_
+            if (instance_ != null) instance_!!
             else
                 YuDB().apply {
                     multi = false

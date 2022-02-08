@@ -8,7 +8,7 @@ import javax.persistence.*
 @Entity
 //@Cacheable
 @Table(name = "test_card")
-//@Cache(usage = CacheConcurrencyStrategy.READ_ONLY,region="mycache")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL,region="mycache")
 data class Card(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
