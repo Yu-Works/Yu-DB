@@ -23,10 +23,10 @@ class Ts {
     @Event
     fun start(e: AppStartEvent) {
 //        newSister()
-//        val card = ss()
-        scc()
-        scc()
-        scc()
+        val card = ss()
+//        scc()
+//        scc()
+//        scc()
     }
 
     @Transactional
