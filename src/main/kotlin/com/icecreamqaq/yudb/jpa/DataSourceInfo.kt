@@ -17,5 +17,9 @@ data class DataSourceInfo(
     var dialect: String = "",
     var ddl: String? = null,
     var defaultCache: Boolean = false,
-    var supportCache: Boolean = false
-)
+    var supportCache: Boolean = false,
+){
+
+    var poolMax: Int = 10
+    var poolIdle: Int = 2
+}

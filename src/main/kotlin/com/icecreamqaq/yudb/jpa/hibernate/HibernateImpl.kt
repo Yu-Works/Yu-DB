@@ -64,6 +64,12 @@ class HibernateImpl : JPAService() {
             default["supportCache"] = db.getString("supportCache")
             db.remove("supportCache")
 
+            default["poolMax"] = db.getString("poolMax")
+            db.remove("poolMax")
+
+            default["poolIdle"] = db.getString("poolIdle")
+            db.remove("poolIdle")
+
         }
 
         val emfMap = HashMap<String, EntityManagerFactory>(db.size)
@@ -80,8 +86,8 @@ class HibernateImpl : JPAService() {
                     hc.username = username
                     hc.password = password
                     hc.driverClassName = driver
-                    hc.maximumPoolSize = 10
-                    hc.minimumIdle = 2
+                    hc.maximumPoolSize = poolMax
+                    hc.minimumIdle = poolIdle
                     hc.connectionTimeout = 30 * 1000
                     hc.isAutoCommit = false
                     hc.isReadOnly = false
