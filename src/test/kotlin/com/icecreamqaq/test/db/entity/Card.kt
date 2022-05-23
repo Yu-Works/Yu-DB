@@ -24,7 +24,7 @@ data class Card(
     var skillList: MutableList<Skill>? = null
 }
 
-interface FCardDao : JPADao<Card, Int> {
-    fun findByCardName(name: String): Card?
-//    fun findByCardName(name: String): List<Card>
-}
+//interface FCardDao : JPADao<Card, Int> {
+//    fun findByCardName(name: String): Card?
+////    fun findByCardName(name: String): List<Card>
+//}

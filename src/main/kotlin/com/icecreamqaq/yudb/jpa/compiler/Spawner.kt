@@ -33,7 +33,7 @@ class Spawner {
 //    lateinit var dataSourceMap: DataSourceMap
 
     @Inject
-    private lateinit var context:YuContext
+    private lateinit var context: YuContext
 
     fun Class<*>.getEntityName() =
         this.getAnnotation(Entity::class.java)?.name?.let { if (it == "") null else it }
@@ -45,7 +45,7 @@ class Spawner {
     fun spawnDaoImpl(dao: Class<out YuDao<*, *>>): Class<*>? {
 
 
-        val xa = arrayOf("Asc", "Desc")
+        val xa = arrayOf("asc", "desc")
         val entityClass = (dao.genericInterfaces[0] as ParameterizedType).actualTypeArguments[0] as Class<*>
         val pkClass = (dao.genericInterfaces[0] as ParameterizedType).actualTypeArguments[1] as Class<*>
         val dataSourceMap = context[DataSourceMap::class.java]!!
@@ -94,7 +94,7 @@ class Spawner {
                 if (page) psb.append("Page iooIooIooPage,")
                 ps = psb.toString().let { s -> s.substring(0, s.length - 1) }
 
-                qs = if (page) ", iooIooIooPage" else "" + qsb.toString()
+                qs = (if (page) ", iooIooIooPage" else "") + qsb.toString()
             }
 
 
@@ -172,34 +172,34 @@ class Spawner {
             var ci = 0
 
             fun end() {
-                if (next == "orderBy") {
-                    end()
-//                    if (pName != "") error(" OrderBy 时，遇到无法解析的前置字符: $pName")
-//                    else {
-                    orderBy = true
-                    hb.append("order by ")
-//                    }
-                } else if (orderBy) {
-                    if (pOp !in (xa)) error(" OrderBy 时，遇到无法解析的后置字符: $pOp")
+                if (orderBy) {
+                    if (next !in (xa)) error(" OrderBy 时，遇到无法解析的后置字符: $pOp")
                     if (!ndd) ndd = true else hb.append(",")
-                    hb.append(pName).append(" ").append(pOp.toLowerCase())
-                } else hb.append(pName.toLowerCaseFirstOne()).append(" ").append(
-                    when (pOp) {
-                        "Is", "Equal" -> "= ?${ci++}"
-                        "LessThan" -> "< ?${ci++}"
-                        "LessThanEqual" -> "<= ?${ci++}"
-                        "GreaterThan" -> "> ?${ci++}"
-                        "GreaterThanEqual" -> ">= ?${ci++}"
-                        "IsNull" -> "is null"
-                        "IsNotNull", "NotNull" -> "is not null"
-                        "Like" -> "like ?${ci++}"
-                        "NotLike" -> "not like ?${ci++}"
-                        "StartingWith" -> "like ?${ci++}(parameter bound with appended %)"
-                        "EndingWith" -> "like ?${ci++}(parameter bound with prepended %)"
-                        "Containing" -> "like ?${ci++}(parameter bound wrapped in %)"
-                        else -> xe("时遇到无法理解的字串: $pOp")
-                    }
-                ).append(" ").append(next).append(" ")
+                    hb.append(pName.toLowerCaseFirstOne()).append(" ").append(next)
+                } else {
+                    hb.append(pName.toLowerCaseFirstOne()).append(" ").append(
+                        when (pOp) {
+                            "Is", "Equal" -> "= ?${ci++}"
+                            "LessThan" -> "< ?${ci++}"
+                            "LessThanEqual" -> "<= ?${ci++}"
+                            "GreaterThan" -> "> ?${ci++}"
+                            "GreaterThanEqual" -> ">= ?${ci++}"
+                            "IsNull" -> "is null"
+                            "IsNotNull", "NotNull" -> "is not null"
+                            "Like" -> "like ?${ci++}"
+                            "NotLike" -> "not like ?${ci++}"
+                            "StartingWith" -> "like ?${ci++}(parameter bound with appended %)"
+                            "EndingWith" -> "like ?${ci++}(parameter bound with prepended %)"
+                            "Containing" -> "like ?${ci++}(parameter bound wrapped in %)"
+                            else -> xe("时遇到无法理解的字串: $pOp")
+                        }
+                    ).append(" ")
+
+                    if (next == "orderBy") {
+                        orderBy = true
+                        hb.append("order by ")
+                    }else hb.append(next).append(" ")
+                }
                 pName = ""
                 pOp = "Is"
                 next = ""

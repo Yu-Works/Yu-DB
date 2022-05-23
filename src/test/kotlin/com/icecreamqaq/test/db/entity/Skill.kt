@@ -1,5 +1,6 @@
 package com.icecreamqaq.test.db.entity
 
+import com.icecreamqaq.yudb.entity.Page
 import com.icecreamqaq.yudb.jpa.JPADao
 import javax.persistence.*
 
@@ -12,14 +13,10 @@ data class Skill(
 
     @Column
     var skillName: String = "",
-) {
-    @ManyToOne(cascade = [CascadeType.ALL] ,fetch = FetchType.LAZY)
-    @JoinColumn(name = "cardId")
-    lateinit var card: Card
-}
+)
 
 interface SkillDao : JPADao<Skill, Int> {
 
-    fun findByCard(card: Card): List<Skill>
+    fun findBySkillNameOrderByIdDesc(skillName: String): List<Skill>
 
 }

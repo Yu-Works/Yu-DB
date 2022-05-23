@@ -11,8 +11,8 @@ import javax.inject.Inject
 @EventListener
 class Ts {
 
-    @Inject
-    private lateinit var cardDao: FCardDao
+//    @Inject
+//    private lateinit var cardDao: FCardDao
 
     @Inject
     private lateinit var skillDao: SkillDao
@@ -23,53 +23,66 @@ class Ts {
     @Event
     fun start(e: AppStartEvent) {
 //        newSister()
-        val card = ss()
+//        val card = ss()
 //        scc()
 //        scc()
 //        scc()
+//        newSkill()
+//        newSkill()
+        test()
     }
 
     @Transactional
-    fun tcs() {
-        val card = Card(cardName = "test01")
-        cardDao.save(card)
-        val skill = Skill(skillName = "skill01")
-        card.skillList = arrayListOf(skill)
-        cardDao.update(card)
+    fun test(){
+        println(skillDao.findBySkillNameOrderByIdDesc("123456"))
     }
 
     @Transactional
-    fun tc(){
-        val card = Card(cardName = "test02")
-        cardDao.save(card)
+    fun newSkill(){
+        skillDao.save(Skill(skillName = "123456"))
     }
 
-    @Transactional
-    fun sc() = cardDao.findByCardName("test02")
-
-    @Transactional
-    fun ssc(){
-        println(cardDao.findByCardName("test02")!!.skillList)
-    }
-
-    @Transactional
-    fun scc(){
-        println(cardDao.findByCardName("test01"))
-        println(cardDao.findByCardName("test01"))
-        println(cardDao.findByCardName("test01"))
-    }
-
-    @Transactional
-    fun ss(): Card {
-        val card = cardDao.findByCardName("test01")!!
-
-//        println(card.skillList)
-//        PersistentBag
-//        card.skillList!!.add(Skill(skillName = "spx"))
-        val skill = skillDao.findByCard(card)
-        println(skill)
-        return card
-    }
+//    @Transactional
+//    fun tcs() {
+//        val card = Card(cardName = "test01")
+//        cardDao.save(card)
+//        val skill = Skill(skillName = "skill01")
+//        card.skillList = arrayListOf(skill)
+//        cardDao.update(card)
+//    }
+//
+//    @Transactional
+//    fun tc(){
+//        val card = Card(cardName = "test02")
+//        cardDao.save(card)
+//    }
+//
+//    @Transactional
+//    fun sc() = cardDao.findByCardName("test02")
+//
+//    @Transactional
+//    fun ssc(){
+//        println(cardDao.findByCardName("test02")!!.skillList)
+//    }
+//
+//    @Transactional
+//    fun scc(){
+//        println(cardDao.findByCardName("test01"))
+//        println(cardDao.findByCardName("test01"))
+//        println(cardDao.findByCardName("test01"))
+//    }
+//
+//    @Transactional
+//    fun ss(): Card {
+//        val card = cardDao.findByCardName("test01")!!
+//
+////        println(card.skillList)
+////        PersistentBag
+////        card.skillList!!.add(Skill(skillName = "spx"))
+//        val skill = skillDao.findByCard(card)
+//        println(skill)
+//        return card
+//    }
 
 
 }
