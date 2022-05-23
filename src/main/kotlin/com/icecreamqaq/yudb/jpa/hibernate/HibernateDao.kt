@@ -106,6 +106,20 @@ open class HibernateDao<T, PK : Serializable> : JPADaoBase<T, PK>() {
         return queryCache(hql, *para).uniqueResult() as T
     }
 
+    fun search(hql: String, page: Page, vararg para: Any): T {
+        return query(hql, *para)
+            .setFirstResult(page.run { (id - 1) * size })
+            .setMaxResults(page.size)
+            .uniqueResult() as T
+    }
+
+    fun searchCache(hql: String, page: Page, vararg para: Any): T {
+        return queryCache(hql, *para)
+            .setFirstResult(page.run { (id - 1) * size })
+            .setMaxResults(page.size)
+            .uniqueResult() as T
+    }
+
     fun nativeSearch(hql: String, resultClass: Class<*>, vararg para: Any): T {
         return nativeQuery(hql, resultClass, *para).uniqueResult() as T
     }
