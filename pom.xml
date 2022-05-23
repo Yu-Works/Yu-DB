@@ -6,7 +6,7 @@
 
     <groupId>com.IceCreamQAQ.Yu</groupId>
     <artifactId>Yu-DB</artifactId>
-    <version>0.0.2.0-DEV16</version>
+    <version>0.0.2.0-DEV19</version>
 
     <parent>
         <groupId>com.IceCreamQAQ</groupId>
@@ -19,8 +19,8 @@
 
         <Yu-Core.version>0.2.0.0-DEV19</Yu-Core.version>
         <HikariCP.version>3.4.1</HikariCP.version>
-        <hibernate.version>5.4.23.Final</hibernate.version>
-        <h2.Version>1.4.200</h2.Version>
+        <hibernate.version>5.4.24.Final</hibernate.version>
+        <h2.Version>2.1.212</h2.Version>
 
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
     </properties>
