@@ -9,17 +9,15 @@ class DataSourceMap {
     }
 }
 
-data class DataSourceInfo(
-    var url: String = "",
-    var username: String = "",
-    var password: String = "",
-    var driver: String = "",
-    var dialect: String = "",
-    var ddl: String? = null,
-    var defaultCache: Boolean = false,
-    var supportCache: Boolean = false,
-){
-
+class DataSourceInfo {
+    var url: String = ""
+    var username: String = ""
+    var password: String = ""
+    var driver: String = ""
+    var dialect: String = ""
+    var ddl: String? = null
+    var defaultCache: Boolean = false
+    var supportCache: Boolean = false
     var poolMax: Int = 10
     var poolIdle: Int = 2
 }
