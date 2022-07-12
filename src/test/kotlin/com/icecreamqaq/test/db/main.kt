@@ -6,6 +6,9 @@ import com.IceCreamQAQ.Yu.hook.HookItem
 import com.IceCreamQAQ.Yu.hook.YuHook
 import com.IceCreamQAQ.Yu.loader.AppClassloader
 import com.icecreamqaq.yudb.YuDB
+import com.icecreamqaq.yudb.jpa.annotation.Transactional
+import kotlinx.coroutines.delay
+import org.hibernate.Session
 import org.hibernate.Version
 import java.io.File
 import java.net.URLClassLoader
@@ -17,5 +20,6 @@ fun main(args: Array<String>) {
 //    println(Version::class.java.`package`.implementationVersion)
     DefaultStarter.init(args)
     DefaultStarter.start()
+
 //    DefaultApp().start()
 }

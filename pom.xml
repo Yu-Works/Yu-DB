@@ -6,7 +6,7 @@
 
     <groupId>com.IceCreamQAQ.Yu</groupId>
     <artifactId>Yu-DB</artifactId>
-    <version>0.0.2.0-DEV19</version>
+    <version>0.0.2.0-DEV23</version>
 
     <parent>
         <groupId>com.IceCreamQAQ</groupId>
@@ -19,8 +19,8 @@
 
         <Yu-Core.version>0.2.0.0-DEV19</Yu-Core.version>
         <HikariCP.version>3.4.1</HikariCP.version>
-        <hibernate.version>5.4.24.Final</hibernate.version>
-        <h2.Version>2.1.212</h2.Version>
+        <hibernate.version>5.6.9.Final</hibernate.version>
+        <h2.Version>2.1.214</h2.Version>
 
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
     </properties>
@@ -85,6 +85,13 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>${h2.Version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
         </dependency>
 
     </dependencies>
