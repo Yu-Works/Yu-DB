@@ -34,7 +34,7 @@ open class HibernateDao<T, PK : Serializable> : JPADaoBase<T, PK>() {
     }
 
     override fun delete(id: PK) {
-        execute(dft, id)
+        dft?.let { execute(it, id) } ?: getSession().delete(get(id))
     }
 
     override fun update(entity: T) {
@@ -132,5 +132,22 @@ open class HibernateDao<T, PK : Serializable> : JPADaoBase<T, PK>() {
         TODO("Not yet implemented")
     }
 
+    override fun deleteAndFlush(entity: T) {
+        getSession().let {
+            it.delete(entity)
+            it.flush()
+        }
+    }
+
+    override fun saveAndFlush(entity: T) {
+        getSession().let {
+            it.save(entity)
+            it.flush()
+        }
+    }
+
     override fun findAll(page: Page?) = searchList(ft, page)
+    override fun delete(entity: T) {
+        getSession().delete(entity)
+    }
 }

@@ -6,7 +6,9 @@ import com.icecreamqaq.yudb.entity.Page
 import java.io.Serializable
 import java.lang.reflect.ParameterizedType
 import javax.inject.Inject
+import javax.persistence.EmbeddedId
 import javax.persistence.Id
+import javax.persistence.IdClass
 
 abstract class JPADaoBase<T, PK : Serializable> : JPADao<T, PK> {
 
@@ -20,17 +22,22 @@ abstract class JPADaoBase<T, PK : Serializable> : JPADao<T, PK> {
     val ft = "from $tName"
     val cft = "select count(*) from $tName"
 
-    lateinit var id: String
-    val dft: String
+    var id: String? = null
+    val dft: String?
 
     init {
-        for (field in tClass.declaredFields) {
-            if (field.getAnnotation(Id::class.java) != null) {
-                id = field.name
-                break
+        if (tClass.getAnnotation(IdClass::class.java) == null)
+            for (field in tClass.declaredFields) {
+                if (field.getAnnotation(Id::class.java) != null) {
+                    id = field.name
+                    break
+                }
+                if (field.getAnnotation(EmbeddedId::class.java) != null) {
+                    id = field.name
+                    break
+                }
             }
-        }
-        dft = "delete $tName where $id=?0"
+        dft = id?.let { "delete $tName where $id=?0" }
     }
 
 

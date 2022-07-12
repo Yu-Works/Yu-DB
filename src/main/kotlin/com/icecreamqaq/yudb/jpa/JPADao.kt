@@ -12,11 +12,15 @@ interface JPADao<T, PK : Serializable> : YuDao<T, PK> {
 
     fun getEM(): EntityManager
 
+    fun saveAndFlush(entity: T)
+    fun delete(entity: T)
+    fun deleteAndFlush(entity: T)
+
     fun query(hql: String, vararg para: Any): Query<T>
 
     fun searchList(hql: String, vararg para: Any): List<T>
     fun searchList(hql: String, page: Page?, vararg para: Any): List<T>
-    fun findAll() : List<T>
+    fun findAll(): List<T>
     fun findAll(page: Page?): List<T>
 
     fun search(hql: String, vararg para: Any): T
