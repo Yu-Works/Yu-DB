@@ -1,11 +1,8 @@
 package com.icecreamqaq.yudb.jpa
 
-import com.IceCreamQAQ.Yu.annotation.Config
 import com.IceCreamQAQ.Yu.di.YuContext
-import com.alibaba.fastjson.JSONObject
 import com.icecreamqaq.yudb.DbService
 import javax.inject.Inject
-import javax.persistence.EntityManagerFactory
 
 abstract class JPAService : DbService {
 
@@ -24,7 +21,6 @@ abstract class JPAService : DbService {
         entities = jpaEntitySearcher.entityList
         val jpaContext = init()
         yuContext.putBean(JPAContext::class.java, "", jpaContext)
-//        TODO("Not yet implemented")
     }
 
     override fun shutdown() {
