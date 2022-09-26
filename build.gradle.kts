@@ -16,7 +16,8 @@ repositories {
 
 dependencies {
     implementation("com.IceCreamQAQ:Yu-Core:0.2.0.0-DEV26")
-    api("com.zaxxer:HikariCP:3.4.1")
+    // HikariCP 5.0+ 最低 Java 要求为 11。
+    api("com.zaxxer:HikariCP:4.0.3")
     val hibernateVersion = "5.6.9.Final"
     api("org.hibernate:hibernate-core:$hibernateVersion")
     api("org.hibernate:hibernate-entitymanager:$hibernateVersion")
