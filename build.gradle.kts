@@ -15,14 +15,13 @@ repositories {
 }
 
 dependencies {
-    implementation("com.IceCreamQAQ:Yu-Core:0.2.0.0-DEV19")
+    implementation("com.IceCreamQAQ:Yu-Core:0.2.0.0-DEV26")
     api("com.zaxxer:HikariCP:3.4.1")
     val hibernateVersion = "5.6.9.Final"
     api("org.hibernate:hibernate-core:$hibernateVersion")
     api("org.hibernate:hibernate-entitymanager:$hibernateVersion")
     api("org.hibernate:hibernate-ehcache:$hibernateVersion")
     implementation("com.h2database:h2:2.1.214")
-    api("com.google.code.findbugs:jsr305:3.0.2")
 }
 
 java {
