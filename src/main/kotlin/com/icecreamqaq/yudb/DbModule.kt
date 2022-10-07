@@ -1,7 +1,7 @@
 package com.icecreamqaq.yudb
 
 import com.IceCreamQAQ.Yu.hook.*
-import com.IceCreamQAQ.Yu.module.Module
+import com.IceCreamQAQ.Yu.loader.Module
 import com.icecreamqaq.yudb.annotation.DB
 import com.icecreamqaq.yudb.jpa.hibernate.HibernateContext
 import org.hibernate.collection.internal.AbstractPersistentCollection

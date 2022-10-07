@@ -17,12 +17,9 @@ class DbMain : ApplicationService {
     private lateinit var dbService: DbService
     override fun width() = 3
 
-    @Inject
-    private lateinit var appClassloader: AppClassloader
-
     override fun init() {
 //        AppClassloader.registerBackList(arrayListOf("org.hibernate."))
-        dbService = (yuContext.getBean(dbImpl,"") as DbService? ?: error("Can't Create DbImpl instance"))
+        dbService = (yuContext.getBean(Class.forName(dbImpl),"") as DbService? ?: error("Can't Create DbImpl instance"))
         dbService.startup()
     }
 

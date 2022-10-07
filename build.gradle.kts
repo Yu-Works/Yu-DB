@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.IceCreamQAQ:Yu-Core:0.2.0.0-DEV26")
+    implementation("com.IceCreamQAQ:Yu-Core:0.3.0.DEV.0")
     // HikariCP 5.0+ 最低 Java 要求为 11。
     api("com.zaxxer:HikariCP:4.0.3")
     // Hibernate 6+ 最低 Java 要求为 11。

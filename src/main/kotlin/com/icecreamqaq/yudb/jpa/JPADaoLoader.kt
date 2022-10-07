@@ -16,16 +16,16 @@ class JPADaoLoader : Loader {
     @Inject
     private lateinit var context: YuContext
 
-    override fun load(items: Map<String, LoadItem>) {
-        for (value in items.values) {
-            if (!value.type.isInterface)continue
-            if (value.type == Dao::class.java) continue
-            if (value.type == JPADao::class.java) continue
-            val impl = spawner.spawnDaoImpl(value.type as Class<YuDao<*, *>>)
+    override fun load(items: Collection<LoadItem>) {
+        for (value in items) {
+            if (!value.clazz.isInterface)continue
+            if (value.clazz == Dao::class.java) continue
+            if (value.clazz == JPADao::class.java) continue
+            val impl = spawner.spawnDaoImpl(value.clazz as Class<YuDao<*, *>>)
             val implInstance = context.newBean(impl!!)!!
-            context.putBean(value.type, "", implInstance)
+            context.putBean(value.clazz as Class<Any>, implInstance)
         }
     }
 
-    override fun width() = 5
+    override fun priority() = 5
 }

@@ -48,7 +48,7 @@ class Spawner {
         val xa = arrayOf("asc", "desc")
         val entityClass = (dao.genericInterfaces[0] as ParameterizedType).actualTypeArguments[0] as Class<*>
         val pkClass = (dao.genericInterfaces[0] as ParameterizedType).actualTypeArguments[1] as Class<*>
-        val dataSourceMap = context[DataSourceMap::class.java]!!
+        val dataSourceMap = context.getBean(DataSourceMap::class.java)!!
         val dsi = dataSourceMap[entityClass.getAnnotation(DB::class.java)?.value ?: "default"]!!
         val defaultCache =
             if (dsi.defaultCache) true else entityClass.getAnnotation(DefaultSupportCache::class.java) != null

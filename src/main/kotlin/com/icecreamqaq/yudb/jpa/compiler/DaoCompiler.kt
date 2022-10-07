@@ -21,7 +21,7 @@ import javax.inject.Named
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 
-class DaoCompiler @Inject constructor(@Named("appClassLoader") val classloader: SpawnClassLoader) {
+class DaoCompiler(val classloader: SpawnClassLoader) {
 
 //    data class CB(val clazz:Class<*>)
 
