@@ -1,5 +1,7 @@
 package com.icecreamqaq.yudb.jpa.hibernate
 
+import com.IceCreamQAQ.Yu.annotation.InstanceMode
+import com.IceCreamQAQ.Yu.hook.HookContext
 import com.IceCreamQAQ.Yu.hook.HookInfo
 import com.IceCreamQAQ.Yu.hook.HookMethod
 import com.IceCreamQAQ.Yu.hook.HookRunnable
@@ -8,31 +10,29 @@ import org.hibernate.Transaction
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
-class HibernateTransactionImpl : HookRunnable {
+@InstanceMode
+class HibernateTransactionImpl(val context: HibernateContext) : HookRunnable {
 
     data class YuTran(val methodHash: Int, val transaction: Transaction)
 
-    @Inject
-    private lateinit var context: HibernateContext
+    private val transactionMethodMap = ConcurrentHashMap<String, Array<String>>()
+    private val trans: HashMap<String, ThreadLocal<YuTran>> = HashMap(context.emf.size)
 
 
-    @Inject
-    fun init() {
-        trans = HashMap(context.emf.size)
+    init {
         for (key in context.emf.keys) {
             trans[key] = ThreadLocal()
         }
     }
 
-    private val transactionMethodMap = ConcurrentHashMap<String, Array<String>>()
-    private lateinit var trans: HashMap<String, ThreadLocal<YuTran>>
+
     override fun init(info: HookInfo) {
         val dbList = info.method.getAnnotation(Transactional::class.java)?.dbList ?: arrayOf("default")
-        info.saveInfo("YuDB.dbList", dbList)
+        info.saveInfo["YuDB.dbList"] = dbList
     }
 
-    override fun preRun(method: HookMethod): Boolean {
-        val dbList = method.info.getInfo("YuDB.dbList") as Array<String>
+    override fun preRun(method: HookContext): Boolean {
+        val dbList = method.info.saveInfo["YuDB.dbList"] as Array<String>
         for (db in dbList) {
             val trans = trans[db] ?: error("Can't find DataSource: $db")
             val yut = trans.get()
@@ -45,8 +45,8 @@ class HibernateTransactionImpl : HookRunnable {
         return false
     }
 
-    override fun postRun(method: HookMethod) {
-        val dbList = method.info.getInfo("YuDB.dbList") as Array<String>
+    override fun postRun(method: HookContext) {
+        val dbList = method.info.saveInfo["YuDB.dbList"] as Array<String>
         for (db in dbList) {
             val trans = trans[db] ?: error("Can't find DataSource: $db")
             val yut = trans.get()
@@ -57,8 +57,8 @@ class HibernateTransactionImpl : HookRunnable {
         }
     }
 
-    override fun onError(method: HookMethod): Boolean {
-        val dbList = method.info.getInfo("YuDB.dbList") as Array<String>
+    override fun onError(method: HookContext): Boolean {
+        val dbList = method.info.saveInfo["YuDB.dbList"] as Array<String>
         for (db in dbList) {
             val trans = trans[db] ?: error("Can't find DataSource: $db")
             val yut = trans.get()

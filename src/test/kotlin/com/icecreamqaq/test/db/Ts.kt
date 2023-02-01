@@ -8,7 +8,7 @@ import com.icecreamqaq.yudb.jpa.annotation.Transactional
 import org.hibernate.collection.internal.PersistentBag
 import javax.inject.Inject
 
-@EventListener
+//@EventListener
 class Ts {
 
 //    @Inject

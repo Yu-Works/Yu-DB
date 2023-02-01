@@ -1,6 +1,6 @@
 package com.icecreamqaq.test.db
 
-import com.IceCreamQAQ.Yu.ApplicationLauncher
+import com.IceCreamQAQ.Yu.FullStackApplicationLauncher
 
 //import com.IceCreamQAQ.Yu.DefaultApp
 //import com.IceCreamQAQ.Yu.DefaultStarter
@@ -23,6 +23,6 @@ fun main(args: Array<String>) {
 //    DefaultStarter.init(args)
 //    DefaultStarter.start()
 
-    ApplicationLauncher.launch(args)
+    FullStackApplicationLauncher.launch(args)
 //    DefaultApp().start()
 }
