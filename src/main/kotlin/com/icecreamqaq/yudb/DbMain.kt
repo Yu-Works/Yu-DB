@@ -15,6 +15,7 @@ class DbMain : ApplicationService {
     private lateinit var yuContext: YuContext
 
     private lateinit var dbService: DbService
+    @Deprecated("过时方法", replaceWith = ReplaceWith("priority"))
     override fun width() = 3
 
     override fun init() {
