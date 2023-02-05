@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.IceCreamQAQ.Yu"
-version = "0.0.2.0-DEV24"
+version = "0.0.2.0-DEV25"
 
 repositories {
     mavenLocal()
@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.IceCreamQAQ:Yu-Core:0.3.0.DEV.1")
+    implementation("com.IceCreamQAQ:Yu-Core:0.3.0.DEV.2")
     // HikariCP 5.0+ 最低 Java 要求为 11。
     api("com.zaxxer:HikariCP:4.0.3")
     // Hibernate 6+ 最低 Java 要求为 11。
