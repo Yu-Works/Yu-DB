@@ -10,6 +10,8 @@ import javax.persistence.EntityManager
 @Dao
 interface JPADao<T, PK : Serializable> : YuDao<T, PK> {
 
+    val entityType: Class<T>
+
     fun getEM(): EntityManager
 
     fun saveAndFlush(entity: T)

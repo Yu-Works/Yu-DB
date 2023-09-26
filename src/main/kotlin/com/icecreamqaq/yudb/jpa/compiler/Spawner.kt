@@ -8,7 +8,6 @@ import com.icecreamqaq.yudb.annotation.DefaultSupportCache
 import com.icecreamqaq.yudb.annotation.DisableCache
 import com.icecreamqaq.yudb.annotation.EnableCache
 import com.icecreamqaq.yudb.entity.Page
-import com.icecreamqaq.yudb.jpa.DataSourceInfo
 import com.icecreamqaq.yudb.jpa.DataSourceMap
 import com.icecreamqaq.yudb.jpa.annotation.Execute
 import com.icecreamqaq.yudb.jpa.annotation.Select
@@ -44,6 +43,7 @@ class Spawner {
 
     fun spawnDaoImpl(dao: Class<out YuDao<*, *>>): Class<*>? {
 
+        if (dao.simpleName == "BaseDao") return null
 
         val xa = arrayOf("asc", "desc")
         val entityClass = (dao.genericInterfaces[0] as ParameterizedType).actualTypeArguments[0] as Class<*>
@@ -87,7 +87,9 @@ class Spawner {
 
                 for (i in 1 until if (page) parameters.size - 1 else parameters.size) {
                     with(parameters[i]) {
-                        psb.append(type.javaType.toClass().name).append(" ").append(name ?: "arg$index").append(",")
+                        var type = type.javaType.toClass()
+
+                        psb.append(if (type.isArray) "${type.componentType.name}[]" else type.name).append(" ").append(name ?: "arg$index").append(",")
                         qsb.append(", ").append(name ?: "arg$index")
                     }
                 }
@@ -140,10 +142,10 @@ class Spawner {
                     }
                 }
 
-                ps = {
+                ps = run {
                     val s = psb.toString()
                     s.substring(0, s.length - 1)
-                }()
+                }
                 qs = qsb.toString()
             }
 
@@ -180,6 +182,7 @@ class Spawner {
                     hb.append(pName.toLowerCaseFirstOne()).append(" ").append(
                         when (pOp) {
                             "Is", "Equal" -> "= ?${ci++}"
+                            "In" -> "in ?${ci++}"
                             "LessThan" -> "< ?${ci++}"
                             "LessThanEqual" -> "<= ?${ci++}"
                             "GreaterThan" -> "> ?${ci++}"
@@ -198,7 +201,7 @@ class Spawner {
                     if (next == "orderBy") {
                         orderBy = true
                         hb.append("order by ")
-                    }else hb.append(next).append(" ")
+                    } else hb.append(next).append(" ")
                 }
                 pName = ""
                 pOp = "Is"
@@ -234,19 +237,27 @@ class Spawner {
                         isNextStr("Asc", true) -> true
                         else -> false
                     }
+
                     'O' -> when {
                         isNextStr("Or", true) -> true
                         isNextStr("OrderBy", true) -> true
                         else -> false
                     }
+
                     'D' -> isNextStr("Desc", true)
                     'L' -> when {
                         isNextStr("LessThanEqual", false) -> true
                         isNextStr("LessThan", false) -> true
                         else -> isNextStr("Like", false)
                     }
+
                     'G' -> if (isNextStr("GreaterThanEqual", false)) true else isNextStr("GreaterThan", false)
-                    'I' -> if (isNextStr("IsNull", false)) true else isNextStr("IsNotNull", false)
+                    'I' -> when{
+                        isNextStr("In", false) -> true
+                        isNextStr("IsNull", false) -> true
+                        isNextStr("IsNotNull", false) -> true
+                        else -> isNextStr("Is", false)
+                    }
                     'N' -> isNextStr("NotList", false)
                     'S' -> isNextStr("StartingWith", false)
                     'E' -> isNextStr("EndingWith", false)
@@ -348,7 +359,21 @@ class Spawner {
 
 
     val baseMethod =
-        arrayOf("delete", "equals", "get", "hashCode", "save", "saveOrUpdate", "toString", "update", "where")
+        arrayOf(
+            "delete",
+            "equals",
+            "get",
+            "hashCode",
+            "save",
+            "saveOrUpdate",
+            "toString",
+            "update",
+            "where",
+            "getEntityType",
+            "getEM",
+            "saveAndFlush",
+            "deleteAndFlush",
+        )
 
     fun Type.toClass() = when (this) {
         is Class<*> -> this

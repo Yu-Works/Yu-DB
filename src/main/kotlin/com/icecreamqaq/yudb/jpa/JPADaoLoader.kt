@@ -21,7 +21,7 @@ class JPADaoLoader : Loader {
             if (!value.clazz.isInterface)continue
             if (value.clazz == Dao::class.java) continue
             if (value.clazz == JPADao::class.java) continue
-            val impl = spawner.spawnDaoImpl(value.clazz as Class<YuDao<*, *>>)
+            val impl = spawner.spawnDaoImpl(value.clazz as Class<YuDao<*, *>>) ?: continue
             val implInstance = context.newBean(impl!!)!!
             context.putBean(value.clazz as Class<Any>, implInstance)
         }

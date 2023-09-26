@@ -48,7 +48,11 @@ open class HibernateDao<T, PK : Serializable> : JPADaoBase<T, PK>() {
     override fun query(hql: String, vararg para: Any): Query<T> {
         val query = getSession().createQuery(hql) ?: error("Create Query Error!")
         for ((i, v) in para.withIndex()) {
-            query.setParameter(i, v)
+            when (v) {
+                is Array<*> -> query.setParameterList(i, v)
+                is Collection<*> -> query.setParameterList(i, v)
+                else -> query.setParameter(i, v)
+            }
         }
         return query as Query<T>
     }
@@ -73,8 +77,8 @@ open class HibernateDao<T, PK : Serializable> : JPADaoBase<T, PK>() {
     override fun searchList(hql: String, page: Page?, vararg para: Any): List<T> {
         val query = query(hql, *para)
         if (page != null) {
-            query.firstResult = (page.id - 1) * page.size
-            query.maxResults = page.size
+            query.firstResult = page.start
+            query.maxResults = page.num
         }
         return query.list() as List<T>
     }
@@ -83,8 +87,8 @@ open class HibernateDao<T, PK : Serializable> : JPADaoBase<T, PK>() {
     fun searchListCache(hql: String, page: Page?, vararg para: Any): List<T> {
         val query = queryCache(hql, *para)
         if (page != null) {
-            query.firstResult = (page.id - 1) * page.size
-            query.maxResults = page.size
+            query.firstResult = page.start
+            query.maxResults = page.num
         }
         return query.list() as List<T>
     }
@@ -92,8 +96,8 @@ open class HibernateDao<T, PK : Serializable> : JPADaoBase<T, PK>() {
     fun nativeSearchList(hql: String, resultClass: Class<*>, page: Page?, vararg para: Any): List<T> {
         val query = nativeQuery(hql, resultClass, *para)
         if (page != null) {
-            query.firstResult = (page.id - 1) * page.size
-            query.maxResults = page.size
+            query.firstResult = page.start
+            query.maxResults = page.num
         }
         return query.list() as List<T>
     }
@@ -108,15 +112,15 @@ open class HibernateDao<T, PK : Serializable> : JPADaoBase<T, PK>() {
 
     fun search(hql: String, page: Page, vararg para: Any): T {
         return query(hql, *para)
-            .setFirstResult(page.run { (id - 1) * size })
-            .setMaxResults(page.size)
+            .setFirstResult(page.start)
+            .setMaxResults(page.num)
             .uniqueResult() as T
     }
 
     fun searchCache(hql: String, page: Page, vararg para: Any): T {
         return queryCache(hql, *para)
-            .setFirstResult(page.run { (id - 1) * size })
-            .setMaxResults(page.size)
+            .setFirstResult(page.start)
+            .setMaxResults(page.num)
             .uniqueResult() as T
     }
 

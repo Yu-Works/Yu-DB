@@ -15,7 +15,10 @@ abstract class JPADaoBase<T, PK : Serializable> : JPADao<T, PK> {
     @Inject
     lateinit var jpaContext: JPAContext
 
-    var tClass: Class<T> = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>
+    val tClass: Class<T> = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>
+
+    override val entityType: Class<T>
+        get() = tClass
 
     val tName = tClass.simpleName
     val tdb = tClass.getAnnotation(DB::class.java)?.value ?: "default"

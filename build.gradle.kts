@@ -5,8 +5,8 @@ plugins {
     `maven-publish`
 }
 
-group = "com.IceCreamQAQ.Yu"
-version = "0.0.2.0-DEV25"
+group = "com.IceCreamQAQ"
+version = "0.1.1"
 
 repositories {
     mavenLocal()
@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.IceCreamQAQ:Yu-Core:0.3.0.DEV.2")
+    implementation("com.IceCreamQAQ:Yu-Core:0.3.0")
     // HikariCP 5.0+ 最低 Java 要求为 11。
     api("com.zaxxer:HikariCP:4.0.3")
     // Hibernate 6+ 最低 Java 要求为 11。
@@ -23,7 +23,7 @@ dependencies {
     api("org.hibernate:hibernate-core:$hibernateVersion")
     api("org.hibernate:hibernate-entitymanager:$hibernateVersion")
     api("org.hibernate:hibernate-ehcache:$hibernateVersion")
-    implementation("com.h2database:h2:2.1.214")
+    testImplementation("com.h2database:h2:2.1.214")
 }
 
 java {
@@ -47,7 +47,7 @@ tasks {
 publishing {
 
     publications {
-        create<MavenPublication>("Yu-DB") {
+        create<MavenPublication>("SmartAccess") {
             groupId = group.toString()
             artifactId = name
             version = project.version.toString()
